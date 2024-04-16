@@ -1,0 +1,12 @@
+Deployment success 🚀
+
+Configuration:
+  World: 0x1f47786624f9f6400f182246410d27a6e83d3e3ae3e6b7b40866d61717aa2b9
+  RPC: https://api.cartridge.gg/x/chess/katana
+  Start Block: 1
+
+Endpoints:
+  GRAPHQL: https://api.cartridge.gg/x/chess/torii/graphql
+  GRPC: https://api.cartridge.gg/x/chess/torii
+
+  0x4ef4bff561588ac55e0453dc53e91b8ad1061d446d72add2ff3143f5aa80d1
