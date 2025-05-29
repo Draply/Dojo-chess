@@ -1,25 +1,52 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+
 import App from "./App.tsx";
+
+// Dojo related imports
+import { init } from "@dojoengine/sdk";
+import { DojoSdkProvider } from "@dojoengine/sdk/react";
+import type { SchemaType } from "./typescript/models.gen.ts";
+import { setupWorld } from "./typescript/contracts.gen.ts";
+
 import "./index.css";
-import { setup } from "./dojo/generated/setup.ts";
-import { DojoProvider } from "./dojo/DojoContext.tsx";
 import { dojoConfig } from "../dojoConfig.ts";
+import StarknetProvider from "./starknet-provider.tsx";
 
-async function init() {
-    const rootElement = document.getElementById("root");
-    if (!rootElement) throw new Error("React root not found");
-    const root = ReactDOM.createRoot(rootElement as HTMLElement);
+/**
+ * Initializes and bootstraps the Dojo application.
+ * Sets up the SDK, burner manager, and renders the root component.
+ *
+ * @throws {Error} If initialization fails
+ */
+async function main() {
+    const sdk = await init<SchemaType>({
+        client: {
+            worldAddress: dojoConfig.manifest.world.address,
+        },
+        domain: {
+            name: "chess",
+            version: "1.0",
+            chainId: "LOCAL_KATANA",
+            revision: "1",
+        },
+    });
 
-    const setupResult = await setup(dojoConfig);
-
-    root.render(
-        <React.StrictMode>
-            <DojoProvider value={setupResult}>
-                <App />
-            </DojoProvider>
-        </React.StrictMode>
+    createRoot(document.getElementById("root")!).render(
+        <StrictMode>
+            <DojoSdkProvider
+                sdk={sdk}
+                dojoConfig={dojoConfig}
+                clientFn={setupWorld}
+            >
+                <StarknetProvider>
+                    <App />
+                </StarknetProvider>
+            </DojoSdkProvider>
+        </StrictMode>
     );
 }
 
-init();
+main().catch((error) => {
+    console.error("Failed to initialize the application:", error);
+});
